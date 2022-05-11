@@ -4,8 +4,13 @@
 {% block title %}Page Not Found{% endblock %}
 {% block content %}
 
-  <h2>Oops! Looks like the page doesn't exist anymore</h2>
-  <a href="{{ url_for('simple_pages.index') }}"><p>Click Here</a>To go to the Home Page</p>
+    <div>
+        <h1>Oops! - You Entered 404 World</h1>
+        <p> Looks like the page doesn't exist anymore</p>
+        <a href="{{ url_for('starter_pages.index') }}"><p>Click Here</a>To go to the Home Page</p>
 
-<!-- {{ url_for('simple_pages.index') }} is a var which returns url of index.html-->
+    </div>
+
+
+<!-- {{ url_for('starter_pages.index') }} is a var which returns url of index.html-->
 {% endblock %}
