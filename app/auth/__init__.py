@@ -9,7 +9,8 @@ from werkzeug.security import generate_password_hash
 from app.auth.decorators import admin_required
 from app.auth.forms import login_form, register_form, profile_form, security_form, user_edit_form, create_user_form
 from app.db import db
-from app.db.models import User, Location, location_user
+from app.db.models import User
+
 
 auth = Blueprint('auth', __name__, template_folder='templates')
 
@@ -82,14 +83,10 @@ def logout():
 @auth.route('/dashboard', methods=['GET'], defaults={"page": 1})
 @auth.route('/dashboard/<int:page>', methods=['GET'])
 @login_required
-def dashboard(page):
-    page = page
-    per_page = 5
-
-    data = current_user.locations
+def dashboard():
 
     try:
-        return render_template('welcome.html',data=data)
+        return render_template('dashboard.html',data=data)
     except TemplateNotFound:
         abort(404)
 

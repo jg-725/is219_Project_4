@@ -4,7 +4,7 @@ from app.auth.forms import login_form
 
 
 def utility_text_processors():
-    message = "This is Project 4!"
+    message = "IS-219 Project 4"
     form = login_form()
 
     def deployment_environment():
@@ -17,7 +17,7 @@ def utility_text_processors():
         return year
 
     return dict(
-        form=form,
+        form = form,
         mymessage=message,
         deployment_environment=deployment_environment(),
         year=current_year()

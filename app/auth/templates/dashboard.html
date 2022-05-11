@@ -1,15 +1,26 @@
 {% extends "base.html" %}
-{% block content %}
-    <div class="row">
-        <h1 class="text-center font-monospace">Welcome To The Site!</h1>
-        <article class="col-8 lh-lg fs-5">
+{% from 'bootstrap5/table.html' import render_table %}
+{% from "bootstrap5/pagination.html" import render_pagination %}
 
-            <h1>Index Page</h1>
-            {{ lipsum (n=2, html=True, min=20, max=60) }}
-        </article>
-        {% if current_user.is_authenticated == true %}
-            <h1 class="text-center font-monospace">You Made It To The Dashboard!</h1>
 
-        {% endif %}
-    </div>
-{% endblock %}
+<div class="row col-8">
+    {% block title %}User: {{ current_user.email }}{% endblock %}
+    {% block content %}
+        <h2>Welcome: {{ current_user.email }}</h2>
+        {{ render_table(data) }}
+
+
+        <script type=text/javascript>
+            $(document).ready(function () {
+                $('.table').DataTable({
+                        dom: 'Bfrtip',
+                        buttons: [
+                            'copy', 'csv', 'excel', 'pdf', 'print'
+                        ]
+                    }
+                );
+            });
+        </script>
+
+    {% endblock %}
+</div>

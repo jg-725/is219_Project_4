@@ -1,6 +1,6 @@
 """A simple flask web app"""
-import os
 import logging
+import os
 
 import flask_login
 from flask import Flask
@@ -15,14 +15,17 @@ from app.db import database
 from app.db import db
 from app.db.models import User
 from app.error_handlers import error_handlers
-from app.starter_pages import starter_pages
+from app.logging_config import log_con, LOGGING_CONFIG
+from app.simple_pages import simple_pages
+
 
 login_manager = flask_login.LoginManager()
+
 
 def create_app():
     """Create and configure an instance of the Flask application."""
     app = Flask(__name__)
-    if os.environ.get("FLASK_ENV") == "production":
+    if  os.environ.get("FLASK_ENV") == "production":
         app.config.from_object("app.config.ProductionConfig")
     elif os.environ.get("FLASK_ENV") == "development":
         app.config.from_object("app.config.DevelopmentConfig")
@@ -30,25 +33,23 @@ def create_app():
         app.config.from_object("app.config.TestingConfig")
         app.config['WTF_CSRF_ENABLED'] = False
 
-    #app.secret_key = 'This is an INSECURE secret!! DO NOT use this in production!!'
-
     # https://flask-login.readthedocs.io/en/latest/  <-login manager
     login_manager.init_app(app)
     login_manager.login_view = "auth.login"
 
+    # Needed for CSRF protection of form submissions and WTF Forms
     # https://wtforms.readthedocs.io/en/3.0.x/
     csrf = CSRFProtect(app)
     # https://bootstrap-flask.readthedocs.io/en/stable/
     bootstrap = Bootstrap5(app)
 
-    #app.register_error_handler(404, page_not_found)
-
     # these load functions with web interface
-    app.register_blueprint(starter_pages)
+    app.register_blueprint(simple_pages)
     app.register_blueprint(auth)
     app.register_blueprint(database)
 
     # these load functionality without a web interface
+    app.register_blueprint(log_con)
     app.register_blueprint(error_handlers)
     app.context_processor(utility_text_processors)
 
@@ -60,8 +61,9 @@ def create_app():
         "methods": ["OPTIONS", "GET", "POST"],
     }
     CORS(app, resources={"/api/*": api_v1_cors_config})
-
+    # Run once at startup:
     return app
+
 
 @login_manager.user_loader
 def user_loader(user_id):
