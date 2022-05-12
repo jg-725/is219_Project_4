@@ -63,6 +63,11 @@ def create_user():
     return user
 
 @pytest.fixture()
+def security_user():
+    user = security_form('john@email.com', 'Lennon', 'Lennon')
+    return user
+
+@pytest.fixture()
 def upload_csv_file():
     input = csv_upload('sample.csv')
     return input
