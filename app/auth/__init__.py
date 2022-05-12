@@ -154,7 +154,7 @@ def edit_user(user_id):
         db.session.commit()
         flash('User Edited Successfully', 'success')
         current_app.logger.info("Edited a user")
-        return redirect(url_for('management.browse_users'))
+        return redirect(url_for('auth.browse_users'))
     return render_template('user_edit.html', form=form)
 
 
@@ -169,10 +169,10 @@ def add_user():
             db.session.add(user)
             db.session.commit()
             flash('Congratulations, you just created a user', 'success')
-            return redirect(url_for('management.browse_users'))
+            return redirect(url_for('auth.browse_users'))
         else:
             flash('THIS USER IS ALREADY REGISTERED')
-            return redirect(url_for('management.browse_users'))
+            return redirect(url_for('auth.browse_users'))
     return render_template('user_new.html', form=form)
 
 
@@ -182,11 +182,11 @@ def delete_user(user_id):
     user = User.query.get(user_id)
     if user.id == current_user.id:
         flash("ATTENTION! YOU CAN'T DELETE YOURSELF!")
-        return redirect(url_for('management.browse_users'), 302)
+        return redirect(url_for('auth.browse_users'), 302)
     db.session.delete(user)
     db.session.commit()
     flash('User Deleted', 'success')
-    return redirect(url_for('management.browse_users'), 302)
+    return redirect(url_for('auth.browse_users'), 302)
 
 
 ###########              CSV File

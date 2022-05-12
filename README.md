@@ -15,5 +15,5 @@
 ### Site Purpose
 
     - User Registration, Login, Logout
-    - Check the Weather
+    - Check the Local Weather
     - Upload a CSV file
