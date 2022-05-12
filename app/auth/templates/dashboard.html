@@ -6,21 +6,13 @@
 <div class="row col-8">
     {% block title %}User: {{ current_user.email }}{% endblock %}
     {% block content %}
-        <h2>Welcome: {{ current_user.email }}</h2>
+        <h2>Welcome To The Dashboard: {{ current_user.email }}</h2>
         {{ render_table(data) }}
 
-
-        <script type=text/javascript>
-            $(document).ready(function () {
-                $('.table').DataTable({
-                        dom: 'Bfrtip',
-                        buttons: [
-                            'copy', 'csv', 'excel', 'pdf', 'print'
-                        ]
-                    }
-                );
-            });
-        </script>
-
+        <div>
+            <h3>Click To Upload A CSV File</h3>
+            <a href="{{ url_for("auth.file_upload") }}" class="btn col-3 mb-5 btn-info"
+           role="button">CSV Uploads</a>
+        </div>
     {% endblock %}
 </div>

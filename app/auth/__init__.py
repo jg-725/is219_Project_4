@@ -1,4 +1,8 @@
+import csv
+import json
 import logging
+import os
+
 
 from flask import Blueprint, render_template, redirect, url_for, flash, current_app, abort
 from flask_login import login_user, login_required, logout_user, current_user
@@ -7,7 +11,8 @@ from sqlalchemy import select
 from werkzeug.security import generate_password_hash
 
 from app.auth.decorators import admin_required
-from app.auth.forms import login_form, register_form, profile_form, security_form, user_edit_form, create_user_form
+from app.auth.forms import login_form, register_form, profile_form, security_form, user_edit_form, create_user_form, csv_upload
+from werkzeug.utils import secure_filename, redirect
 from app.db import db
 from app.db.models import User
 
@@ -30,11 +35,6 @@ def register():
                 user.is_admin = 1
                 db.session.add(user)
                 db.session.commit()
-
-            msg = Message("Welcome to the site",
-                          sender="from@example.com",
-                          recipients=[user.email])
-            msg.body = "Welcome to the site"
 
             flash('Congratulations, you are now a registered user!', "success")
 
@@ -79,15 +79,12 @@ def logout():
 
 
 
-@auth.route('/dashboard', methods=['GET'], defaults={"page": 1})
-@auth.route('/dashboard/<int:page>', methods=['GET'])
+@auth.route('/dashboard', methods=['GET'])
 @login_required
 def dashboard():
 
-    try:
-        return render_template('dashboard.html',data=data)
-    except TemplateNotFound:
-        abort(404)
+    return render_template('dashboard.html')
+
 
 @auth.route('/profile', methods=['POST', 'GET'])
 def edit_profile():
@@ -119,3 +116,131 @@ def edit_account():
 
 
 #You should probably move these to a new Blueprint to clean this up.  These functions below are for user management
+
+
+@auth.route('/users')
+@login_required
+@admin_required
+def browse_users():
+    data = User.query.all()
+    titles = [('email', 'Email'), ('registered_on', 'Registered On')]
+    retrieve_url = ('auth.retrieve_user', [('user_id', ':id')])
+    edit_url = ('auth.edit_user', [('user_id', ':id')])
+    add_url = url_for('auth.add_user')
+    delete_url = ('auth.delete_user', [('user_id', ':id')])
+
+    current_app.logger.info("Browse page loading")
+
+    return render_template('browse.html', titles=titles, add_url=add_url, edit_url=edit_url, delete_url=delete_url,
+                           retrieve_url=retrieve_url, data=data, User=User, record_type="Users")
+
+
+@auth.route('/users/<int:user_id>')
+@login_required
+def retrieve_user(user_id):
+    user = User.query.get(user_id)
+    return render_template('profile_view.html', user=user)
+
+
+@auth.route('/users/<int:user_id>/edit', methods=['POST', 'GET'])
+@login_required
+def edit_user(user_id):
+    user = User.query.get(user_id)
+    form = user_edit_form(obj=user)
+    if form.validate_on_submit():
+        user.about = form.about.data
+        user.is_admin = int(form.is_admin.data)
+        db.session.add(user)
+        db.session.commit()
+        flash('User Edited Successfully', 'success')
+        current_app.logger.info("Edited a user")
+        return redirect(url_for('management.browse_users'))
+    return render_template('user_edit.html', form=form)
+
+
+@auth.route('/users/new', methods=['POST', 'GET'])
+@login_required
+def add_user():
+    form = create_user_form()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user is None:
+            user = User(email=form.email.data, password=generate_password_hash(form.password.data), is_admin=int(form.is_admin.data))
+            db.session.add(user)
+            db.session.commit()
+            flash('Congratulations, you just created a user', 'success')
+            return redirect(url_for('management.browse_users'))
+        else:
+            flash('THIS USER IS ALREADY REGISTERED')
+            return redirect(url_for('management.browse_users'))
+    return render_template('user_new.html', form=form)
+
+
+@auth.route('/users/<int:user_id>/delete', methods=['POST'])
+@login_required
+def delete_user(user_id):
+    user = User.query.get(user_id)
+    if user.id == current_user.id:
+        flash("ATTENTION! YOU CAN'T DELETE YOURSELF!")
+        return redirect(url_for('management.browse_users'), 302)
+    db.session.delete(user)
+    db.session.commit()
+    flash('User Deleted', 'success')
+    return redirect(url_for('management.browse_users'), 302)
+
+
+###########              CSV File
+
+@auth.route('/csv', methods=['POST', 'GET'], defaults={"page": 1})
+@auth.route('/csv/<int:page>', methods=['POST', 'GET'])
+@login_required
+def browse_data(page):
+    page = page
+    per_page = 10
+    try:
+        return render_template('browse_csv_data.html',
+                            page=page, per_page=per_page)
+    except TemplateNotFound:
+        abort(404)
+
+
+@auth.route('/csv/upload', methods=['POST', 'GET'])
+@login_required
+def file_upload():
+    form = csv_upload()
+    if form.validate_on_submit():
+        filename = secure_filename(form.file.data.filename)
+        filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+        form.file.data.save(filepath)
+        with open(filepath) as file:
+            csv_file = csv.DictReader(file)
+            header = next(csv_file)
+            print(header)
+            rows = []
+            for row in csv_file:
+                rows.append(row)
+                if row is None:
+                    db.session.commit()
+                else:
+                    rows.append(row)
+                    db.session.commit()
+        return redirect(url_for('auth.browse_data'))
+
+    try:
+        return render_template('upload_csv.html', form=form)
+    except TemplateNotFound:
+        abort(404)
+
+
+###############################################
+
+
+
+
+@auth.route('/weather', methods=['GET'])
+def weather_data():
+    openweather_api_key = current_app.config.get('OPEN_WEATHER_API_KEY')
+    try:
+        return render_template('weather.html',openweather_api_key=openweather_api_key)
+    except TemplateNotFound:
+        abort(404)
