@@ -41,5 +41,17 @@ def new_user():
 
 @pytest.fixture()
 def bad_user():
-    user = login_form('jeff@email.com', 'Password1')
+    user = login_form('jeff101@email.com', 'Password1')
+    return user
+
+
+@pytest.fixture()
+def successful_registration():
+    user = register_form('example@email.com', 'Password', 'Password')
+    return user
+
+
+@pytest.fixture()
+def bad_email_register():
+    user = register_form('example123@email.com', 'Password', 'Password')
     return user
