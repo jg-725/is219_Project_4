@@ -1,4 +1,4 @@
-''' Tests csv upload form '''
+""" Tests csv upload form """
 
 def test_csv_form(upload_csv_file):
     assert upload_csv_file.filename == 'sample.csv'

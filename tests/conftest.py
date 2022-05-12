@@ -74,6 +74,11 @@ def upload_csv_file():
 
 
 @pytest.fixture()
+def bad_upload_csv_file():
+    input = csv_upload('sample1.csv')
+    return input
+
+@pytest.fixture()
 def profile_edit():
     input = profile_form('Hello, this is my profile!')
     return input
