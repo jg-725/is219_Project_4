@@ -67,6 +67,12 @@ def upload_csv_file():
     input = csv_upload('sample.csv')
     return input
 
+
+@pytest.fixture()
+def profile_edit():
+    input = profile_form('Hello, this is my profile!')
+    return input
+
 @pytest.fixture()
 def input_value():
     input = 39
