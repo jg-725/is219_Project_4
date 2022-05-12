@@ -13,6 +13,7 @@ class Config(object):
     UPLOAD_FOLDER =  os.getenv('UPLOAD_FOLDER', os.path.join(BASE_DIR,'..' , 'uploads'))
     #GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY','NOKEY')
     LOG_DIR =  os.path.join(BASE_DIR, '../logs')
+    OPEN_WEATHER_API_KEY = os.getenv('OPEN_WEATHER_API_KEY', 'NOKEY')
 
 
 class ProductionConfig(Config):

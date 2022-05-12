@@ -11,3 +11,9 @@
 
 ## Project Description
     This is Project 4 a web application that uses flask, Javascript, and Sqlite.
+
+### Site Purpose
+
+    - User Registration, Login, Logout
+    - Check the Weather
+    - Upload a CSV file
