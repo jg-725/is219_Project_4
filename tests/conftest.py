@@ -35,51 +35,51 @@ def runner(app):
 
 
 @pytest.fixture()
-def new_user():
+def new_user(client):
     user = login_form('jeff@email.com', 'Jeffrey')
     return user
 
 
 @pytest.fixture()
-def bad_user():
+def bad_user(client):
     user = login_form('jeff101@email.com', 'Password1')
     return user
 
 
 @pytest.fixture()
-def successful_registration():
+def successful_registration(client):
     user = register_form('jeff@email.com', 'Jeffrey', 'Jeffrey')
     return user
 
 
 @pytest.fixture()
-def bad_email_register():
+def bad_email_register(client):
     user = register_form('jeff123@email.com', 'Jeff', 'Jeff')
     return user
 
 @pytest.fixture()
-def create_user():
+def create_user(client):
     user = create_user_form('bob@email.com', 'Marley', 'Marley', '1')
     return user
 
 @pytest.fixture()
-def security_user():
+def security_user(client):
     user = security_form('john@email.com', 'Lennon', 'Lennon')
     return user
 
 @pytest.fixture()
-def upload_csv_file():
+def upload_csv_file(client):
     input = csv_upload('sample.csv')
     return input
 
 
 @pytest.fixture()
-def bad_upload_csv_file():
+def bad_upload_csv_file(client):
     input = csv_upload('sample1.csv')
     return input
 
 @pytest.fixture()
-def profile_edit():
+def profile_edit(client):
     input = profile_form('Hello, this is my profile!')
     return input
 
