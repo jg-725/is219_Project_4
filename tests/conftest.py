@@ -6,6 +6,7 @@ import pytest
 from app import create_app
 from app.auth import login_form
 from app.auth import register_form
+from app.auth import create_user_form, profile_form, security_form
 
 
 @pytest.fixture()
@@ -55,3 +56,14 @@ def successful_registration():
 def bad_email_register():
     user = register_form('jeff123@email.com', 'Jeff', 'Jeff')
     return user
+
+@pytest.fixture()
+def create_user():
+    user = create_user_form('bob@email.com', 'Marley', 'Marley', '1')
+    return user
+
+
+@pytest.fixture()
+def input_value():
+    input = 39
+    return input
