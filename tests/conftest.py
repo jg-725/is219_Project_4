@@ -6,7 +6,7 @@ import pytest
 from app import create_app
 from app.auth import login_form
 from app.auth import register_form
-from app.auth import create_user_form, profile_form, security_form
+from app.auth import create_user_form, profile_form, security_form, csv_upload
 
 
 @pytest.fixture()
@@ -62,6 +62,10 @@ def create_user():
     user = create_user_form('bob@email.com', 'Marley', 'Marley', '1')
     return user
 
+@pytest.fixture()
+def upload_csv_file():
+    input = csv_upload('sample.csv')
+    return input
 
 @pytest.fixture()
 def input_value():
